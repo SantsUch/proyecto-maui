@@ -37,7 +37,7 @@ namespace BomberosApp.MVVM.ViewModels
             _navigation = navigation;
 
             LoginCommand = new Command(async () => await Login());
-            CancelarCommand = new Command(async () => await _navigation.PopAsync());
+            CancelarCommand = new Command(async () => await Cancelar());
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             GoToSignInCommand = new Command(async () => await GoToSignIn());
         }
@@ -78,6 +78,7 @@ namespace BomberosApp.MVVM.ViewModels
                         break;
                 }
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al iniciar sesión: {ex}");

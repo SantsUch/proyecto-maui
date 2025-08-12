@@ -23,7 +23,7 @@ namespace BomberosApp.MVVM.ViewModels
             _repository = new UsuariosRepository();
             _navigation = navigation;
 
-            CancelarCommand = new Command(async () => await _navigation.PopAsync());
+            CancelarCommand = new Command(async () => await Cancelar());
             RegistrarCommand = new Command(async () => await Registrar());
         }
 
