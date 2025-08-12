@@ -30,6 +30,10 @@ namespace BomberosApp.MVVM.ViewModels
         public bool MostrarPanelAsignacion => IncidenteSeleccionado != null;
         public string TituloIncidenteSeleccionado => IncidenteSeleccionado != null ? $"Incidente: {IncidenteSeleccionado.Titulo}" : "";
 
+        // Propiedades para mensajes informativos
+        public string MensajeFuncionarios { get; set; }
+        public bool MostrarMensajeFuncionarios => !string.IsNullOrEmpty(MensajeFuncionarios);
+
         // Propiedades para colores de prioridad
         public Color PrioridadColorFondo => PrioridadSeleccionada switch
         {
@@ -50,6 +54,7 @@ namespace BomberosApp.MVVM.ViewModels
         };
 
         public ICommand ActualizarListaCommand { get; set; }
+        public ICommand ActualizarFuncionariosCommand { get; set; }
         public ICommand SeleccionarIncidenteCommand { get; set; }
         public ICommand ConfirmarAsignacionCommand { get; set; }
         public ICommand CancelarAsignacionCommand { get; set; }
@@ -112,6 +117,7 @@ namespace BomberosApp.MVVM.ViewModels
         private void InitializeCommands()
         {
             ActualizarListaCommand = new Command(async () => await CargarIncidentes());
+            ActualizarFuncionariosCommand = new Command(async () => await ActualizarFuncionarios()); // AGREGAR ESTA LÍNEA
             SeleccionarIncidenteCommand = new Command<IncidenteModel>(SeleccionarIncidente);
             ConfirmarAsignacionCommand = new Command(async () => await ConfirmarAsignacion());
             CancelarAsignacionCommand = new Command(CancelarAsignacion);
@@ -167,22 +173,71 @@ namespace BomberosApp.MVVM.ViewModels
         {
             try
             {
+                Console.WriteLine("Cargando funcionarios...");
+
                 var usuarios = await _usuariosRepository.GetAllAsync();
+                Console.WriteLine($"Total usuarios encontrados: {usuarios.Count}");
+
                 var funcionarios = usuarios.Values
                     .Where(u => u.Rol == "Funcionario" || u.Rol == "Administrador")
                     .OrderBy(u => u.Nombre)
                     .ToList();
 
+                Console.WriteLine($"Funcionarios filtrados: {funcionarios.Count}");
+
                 FuncionariosDisponibles.Clear();
                 foreach (var funcionario in funcionarios)
                 {
+                    Console.WriteLine($"Agregando funcionario: {funcionario.Nombre} - {funcionario.Rol}");
+
+                    // Asegurar que tiene la Key de Firebase
+                    var funcionarioConKey = usuarios.FirstOrDefault(u => u.Value.Id == funcionario.Id);
+                    if (funcionarioConKey.Key != null)
+                    {
+                        funcionario.Key = funcionarioConKey.Key;
+                    }
+
                     FuncionariosDisponibles.Add(funcionario);
                 }
+
+                Console.WriteLine($"Total funcionarios disponibles: {FuncionariosDisponibles.Count}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al cargar funcionarios: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Error",
+                    "No se pudieron cargar los funcionarios disponibles", "OK");
             }
+        }
+
+        private async Task ActualizarFuncionarios()
+        {
+            MensajeFuncionarios = "Cargando funcionarios...";
+            OnPropertyChanged(nameof(MensajeFuncionarios));
+            OnPropertyChanged(nameof(MostrarMensajeFuncionarios));
+
+            await CargarFuncionarios();
+
+            if (FuncionariosDisponibles.Count == 0)
+            {
+                MensajeFuncionarios = "No hay funcionarios disponibles. Crear funcionarios en Gestión de Usuarios.";
+            }
+            else
+            {
+                MensajeFuncionarios = $"Funcionarios disponibles: {FuncionariosDisponibles.Count}";
+
+                // Limpiar el mensaje después de 3 segundos
+                Device.StartTimer(TimeSpan.FromSeconds(3), () =>
+                {
+                    MensajeFuncionarios = "";
+                    OnPropertyChanged(nameof(MensajeFuncionarios));
+                    OnPropertyChanged(nameof(MostrarMensajeFuncionarios));
+                    return false;
+                });
+            }
+
+            OnPropertyChanged(nameof(MensajeFuncionarios));
+            OnPropertyChanged(nameof(MostrarMensajeFuncionarios));
         }
 
         private void SeleccionarIncidente(IncidenteModel incidente)
@@ -337,6 +392,8 @@ namespace BomberosApp.MVVM.ViewModels
             OnPropertyChanged(nameof(FuncionarioSeleccionado));
             OnPropertyChanged(nameof(PrioridadColorFondo));
             OnPropertyChanged(nameof(PrioridadColorTexto));
+            OnPropertyChanged(nameof(MensajeFuncionarios));
+            OnPropertyChanged(nameof(MostrarMensajeFuncionarios));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
