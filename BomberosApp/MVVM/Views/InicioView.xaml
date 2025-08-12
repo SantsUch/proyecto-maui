@@ -1,0 +1,61 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:BomberosApp.MVVM.ViewModels"
+             x:Class="BomberosApp.MVVM.Views.InicioView"
+             Title="Bienvenido"
+             Shell.NavBarIsVisible="False">
+    <Grid>
+        <!-- Imagen de fondo -->
+        <Image Source="fondo_bomberos.jpg"
+               Aspect="AspectFill"
+               Opacity="1"
+               />
+
+        <!-- Overlay semitransparente (ej. rojo con opacidad) -->
+        <BoxView BackgroundColor="#1649A1" />
+        <!-- Negro al 50% 
+        
+        1647A1
+        
+        
+        -->
+
+        <!-- Contenido centrado -->
+        <VerticalStackLayout Padding="15" Spacing="15" VerticalOptions="Center" HorizontalOptions="Center">
+            
+            <Image Source="emblema_bomberos.png"
+                   HeightRequest="300"
+                   Margin="0,0" />
+
+            <Button Text="Reportar Incidente"
+                    Command="{Binding IrAReporteCommand}"
+                    BackgroundColor="#E31E24"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="100"
+                    FontSize="25"
+                    Margin="0,10,0,10"
+                    BorderColor="White"
+                    BorderWidth="1.5"/>
+
+            <Button Text="Iniciar Sesión"
+                    Command="{Binding IrALoginCommand}"
+                    BackgroundColor="#FFD700"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    HeightRequest="100"
+                    FontSize="25"
+                    BorderColor="Black"
+                    BorderWidth="1.5"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
+
+
+<!--
+<ContentPage.BindingContext>
+    <vm:InicioViewModel />
+</ContentPage.BindingContext>
+-->
+
+

@@ -1,0 +1,90 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:BomberosApp.MVVM.ViewModels"
+             x:Class="BomberosApp.MVVM.Views.LoginView"
+             Title="Iniciar Sesión"
+             BackgroundColor="#385FA1">
+    <!-- Fondo azul bandera -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+
+            <!-- Frame con mensaje y campos de entrada -->
+            <Frame Padding="20"
+                   BackgroundColor="White"
+                   BorderColor="#FFD700"
+                   CornerRadius="12"
+                   HasShadow="True"
+                   Margin="0,0,0,10">
+
+                <VerticalStackLayout Spacing="15">
+                    <!-- Mensaje -->
+                    <Label Text="Por favor, ingrese sus credenciales para continuar"
+                           FontSize="18"
+                           TextColor="#1649A1"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,0,0,10" />
+
+                    <!-- Entrada de correo -->
+                    <Label Text="Correo electrónico" TextColor="#1649A1" FontSize="16"/>
+                    <Entry Placeholder="ejemplo@correo.com"
+                           Keyboard="Email"
+                           Text="{Binding Correo}"
+                           BackgroundColor="#F0F0F0"
+                           HeightRequest="45"
+                           FontSize="14"/>
+
+                    <!-- Entrada de contraseña -->
+                    <Label Text="Contraseña" TextColor="#1649A1" FontSize="16"/>
+                    <Entry Placeholder="••••••••"
+                           IsPassword="True"
+                           Text="{Binding Contrasena}"
+                           BackgroundColor="#F0F0F0"
+                           HeightRequest="45"
+                           FontSize="14"/>
+
+                    <Button Text="Crear cuenta"
+                            Command="{Binding GoToSignInCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="#E31E24"
+                            FontAttributes="Italic"
+                            FontSize="14"
+                            Padding="0"/>
+
+                    <!-- Opción: ¿Olvidó su contraseña? -->
+                    <Button Text="¿Ha olvidado su contraseña?"
+                            Command="{Binding ForgotPasswordCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="#E31E24"
+                            FontAttributes="Italic"
+                            FontSize="14"
+                            Padding="0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botón de login -->
+            <Button Text="Entrar"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#FFD700"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    FontSize="18"
+                    HeightRequest="50"
+                    BorderColor="Black"
+                    BorderWidth="1.5"/>
+
+            <!-- Botón de volver -->
+            <Button Text="Volver"
+                    Command="{Binding CancelarCommand}"
+                    BackgroundColor="White"
+                    TextColor="#1649A1"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    FontSize="18"
+                    HeightRequest="50" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+
+

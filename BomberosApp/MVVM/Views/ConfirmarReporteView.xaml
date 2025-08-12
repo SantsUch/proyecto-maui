@@ -1,0 +1,53 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:BomberosApp.MVVM.ViewModels"
+             x:Class="BomberosApp.MVVM.Views.ConfirmarReporteView"
+             Title="Confirmación"
+             BackgroundColor="#1649A1">
+    <!-- Fondo azul bandera -->
+
+    <Grid>
+        <VerticalStackLayout Padding="30"
+                             Spacing="20"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             WidthRequest="320">
+
+            <!-- Panel tipo popup -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="15"
+                   HasShadow="True"
+                   Padding="25"
+                   BorderColor="#FFD700">
+
+                <VerticalStackLayout Spacing="20"
+                                     HorizontalOptions="Center">
+
+                    <!-- Ícono de confirmación -->
+                    <Image Source="check_icon.png"
+                           HeightRequest="100"
+                           WidthRequest="100"
+                           HorizontalOptions="Center" />
+
+                    <!-- Mensaje -->
+                    <Label Text="Reporte exitoso. Gracias por su Colaboración"
+                           FontSize="20"
+                           TextColor="#1649A1"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap" />
+
+                    <!-- Botón -->
+                    <Button Text="Volver al Inicio"
+                            Command="{Binding GoToHomeCommand}"
+                            BackgroundColor="#E31E24"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="12"
+                            FontSize="16"
+                            HeightRequest="45" />
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
+
