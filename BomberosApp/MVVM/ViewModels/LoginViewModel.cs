@@ -59,18 +59,19 @@ namespace BomberosApp.MVVM.ViewModels
                     return;
                 }
 
-                var rol = usuarioEncontrado.Value.Rol;
+                var usuario = usuarioEncontrado.Value;
+                var rol = usuario.Rol;
 
                 switch (rol)
                 {
                     case "Civil":
-                        await _navigation.PushAsync(new ReportarIncidenteView());
+                        await _navigation.PushAsync(new DashboardCiudadanoView(usuario));
                         break;
                     case "Funcionario":
-                        await _navigation.PushAsync(new ReportarIncidenteView());
+                        await _navigation.PushAsync(new DashboardFuncionarioView(usuario)); // Por implementar
                         break;
                     case "Administrador":
-                        await _navigation.PushAsync(new ReportarIncidenteView());
+                        await _navigation.PushAsync(new AsignarIncidentesView());
                         break;
                     default:
                         await ShowMessage("Rol no reconocido", false);

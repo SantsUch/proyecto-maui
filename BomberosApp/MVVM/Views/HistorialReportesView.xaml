@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BomberosApp.MVVM.Views.HistorialReportesView"
+             Title="Historial de Reportes"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Título con botón actualizar -->
+        <Frame Grid.Row="0"
+               BackgroundColor="#1649A1"
+               CornerRadius="12"
+               Padding="20"
+               Margin="15,15,15,0"
+               HasShadow="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="Mis Reportes"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       VerticalTextAlignment="Center"/>
+                <Button Grid.Column="1"
+                        Text="🔄"
+                        Command="{Binding ActualizarCommand}"
+                        BackgroundColor="#FFD700"
+                        TextColor="Black"
+                        FontSize="16"
+                        WidthRequest="40"
+                        HeightRequest="40"
+                        CornerRadius="20"/>
+            </Grid>
+        </Frame>
+
+        <!-- Lista de reportes -->
+        <CollectionView Grid.Row="1"
+                       ItemsSource="{Binding MisIncidentes}"
+                       Margin="15,10,15,0">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" 
+                                   VerticalOptions="Center"
+                                   Spacing="20">
+                    <Label Text="No hay reportes para mostrar"
+                           FontSize="18"
+                           TextColor="#666"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="Sus reportes aparecerán aquí una vez que los envíe"
+                           FontSize="14"
+                           TextColor="#999"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="White"
+                           CornerRadius="12"
+                           Padding="15"
+                           Margin="0,5"
+                           HasShadow="True">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="8">
+
+                                <Label Text="{Binding Titulo}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="#333"/>
+
+                                <Label Text="{Binding FechaReportado, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                       FontSize="14"
+                                       TextColor="#666"/>
+
+                                <Label Text="{Binding Ubicacion}"
+                                       FontSize="14"
+                                       TextColor="#666"/>
+
+                                <Label Text="{Binding Estado}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="#E31E24"/>
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="1"
+                                    Text="Ver"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerDetalleIncidenteCommand}"
+                                    CommandParameter="{Binding .}"
+                                    BackgroundColor="#FFD700"
+                                    TextColor="Black"
+                                    FontSize="12"
+                                    WidthRequest="60"
+                                    HeightRequest="35"
+                                    CornerRadius="8"
+                                    VerticalOptions="Center"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

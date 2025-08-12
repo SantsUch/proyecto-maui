@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BomberosApp.MVVM.Views.SeguimientoIncidenteView"
+             Title="Seguimiento de Incidente"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Header del incidente -->
+            <Frame BackgroundColor="#1649A1"
+                   CornerRadius="15"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{Binding Incidente.Titulo}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding Incidente.Id, StringFormat='ID: {0}'}"
+                           FontSize="14"
+                           TextColor="#FFD700"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Estado actual -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Estado Actual"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+
+                    <Label Text="{Binding Incidente.Estado, TargetNullValue='Reportado'}"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#E31E24"
+                           HorizontalTextAlignment="Center"
+                           BackgroundColor="#F0F0F0"
+                           Padding="10"
+                           VerticalTextAlignment="Center"/>
+
+                    <Label Text="{Binding UltimaActualizacion, StringFormat='Última actualización: {0:dd/MM/yyyy HH:mm}'}"
+                           FontSize="12"
+                           TextColor="#666"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Detalles del incidente -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Detalles del Reporte"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Descripción:"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Label Text="{Binding Incidente.Descripcion}"
+                               FontSize="14"
+                               TextColor="#666"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Ubicación:"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Label Text="{Binding Incidente.Ubicacion}"
+                               FontSize="14"
+                               TextColor="#666"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Fecha del Reporte:"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Label Text="{Binding Incidente.FechaReportado, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                               FontSize="14"
+                               TextColor="#666"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Información del funcionario asignado -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True"
+                   IsVisible="{Binding FuncionarioAsignado, Converter={StaticResource ObjectToBoolConverter}}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Funcionario Asignado"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Nombre:"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Label Text="{Binding FuncionarioAsignado.Nombre}"
+                               FontSize="14"
+                               TextColor="#666"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Contacto:"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Label Text="{Binding FuncionarioAsignado.Correo}"
+                               FontSize="14"
+                               TextColor="#666"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Historial simple -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Historial de Estados"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+
+                    <CollectionView ItemsSource="{Binding HistorialEstados}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout Spacing="5" Margin="0,5">
+                                    <Label Text="{Binding Estado}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="#333"/>
+                                    <Label Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                           FontSize="12"
+                                           TextColor="#666"/>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones de acción -->
+            <VerticalStackLayout Spacing="15">
+                <Button Text="Actualizar Estado"
+                        Command="{Binding ActualizarEstadoCommand}"
+                        BackgroundColor="#1649A1"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"/>
+
+                <Button Text="Contactar Soporte"
+                        Command="{Binding ContactarSoporteCommand}"
+                        BackgroundColor="#FFD700"
+                        TextColor="Black"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"/>
+
+                <Button Text="Volver"
+                        Command="{Binding VolverCommand}"
+                        BackgroundColor="White"
+                        TextColor="#1649A1"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        BorderColor="#1649A1"
+                        BorderWidth="2"/>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

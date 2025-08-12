@@ -10,7 +10,7 @@ namespace BomberosApp.MVVM.Repositories
 
         public UsuariosRepository()
         {
-            _client = new FirebaseClient("https://fir-maui-b923e-default-rtdb.firebaseio.com/");
+            _client = new FirebaseClient("https://fir-maui-432d5-default-rtdb.firebaseio.com/");
         }
 
         // 1. Crear usuario

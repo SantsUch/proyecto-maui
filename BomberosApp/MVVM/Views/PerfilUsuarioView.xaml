@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BomberosApp.MVVM.Views.PerfilUsuarioView"
+             Title="Mi Perfil"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Header del perfil -->
+            <Frame BackgroundColor="#1649A1"
+                   CornerRadius="15"
+                   Padding="25"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <!-- Avatar simple -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="50"
+                           WidthRequest="80"
+                           HeightRequest="80"
+                           Padding="0"
+                           HasShadow="True">
+                        <Label Text="👤"
+                               FontSize="40"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"
+                               TextColor="#1649A1"/>
+                    </Frame>
+
+                    <Label Text="{Binding Usuario.Nombre}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalTextAlignment="Center"/>
+
+                    <Label Text="{Binding Usuario.Rol}"
+                           FontSize="14"
+                           TextColor="#FFD700"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Información personal -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Información Personal"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+
+                    <!-- Nombre -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Nombre Completo"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Entry Text="{Binding Usuario.Nombre}"
+                               IsReadOnly="{Binding ModoLectura}"
+                               BackgroundColor="#F0F0F0"
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+
+                    <!-- Correo -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Correo Electrónico"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Entry Text="{Binding Usuario.Correo}"
+                               IsReadOnly="True"
+                               BackgroundColor="#F0F0F0"
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+
+                    <!-- Rol -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Rol en el Sistema"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333"/>
+                        <Entry Text="{Binding Usuario.Rol}"
+                               IsReadOnly="True"
+                               BackgroundColor="#F0F0F0"
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Cambiar contraseña -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True"
+                   IsVisible="{Binding MostrarCambioContrasena}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Cambiar Contraseña"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+
+                    <Entry Text="{Binding ContrasenaActual}"
+                           IsPassword="True"
+                           Placeholder="Contraseña actual"
+                           BackgroundColor="#F0F0F0"/>
+
+                    <Entry Text="{Binding NuevaContrasena}"
+                           IsPassword="True"
+                           Placeholder="Nueva contraseña"
+                           BackgroundColor="#F0F0F0"/>
+
+                    <Entry Text="{Binding ConfirmarNuevaContrasena}"
+                           IsPassword="True"
+                           Placeholder="Confirmar nueva contraseña"
+                           BackgroundColor="#F0F0F0"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <Button Grid.Column="0"
+                                Text="Guardar"
+                                Command="{Binding GuardarCambiosContrasenaCommand}"
+                                BackgroundColor="#1649A1"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                HeightRequest="45"
+                                CornerRadius="12"/>
+
+                        <Button Grid.Column="1"
+                                Text="Cancelar"
+                                Command="{Binding CancelarCambioContrasenaCommand}"
+                                BackgroundColor="#E31E24"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                HeightRequest="45"
+                                CornerRadius="12"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones de acción -->
+            <VerticalStackLayout Spacing="15">
+                <Button Text="{Binding TextoBotonEdicion}"
+                        Command="{Binding ToggleEdicionCommand}"
+                        BackgroundColor="#FFD700"
+                        TextColor="Black"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"/>
+
+                <Button Text="Cambiar Contraseña"
+                        Command="{Binding MostrarCambioContrasenaCommand}"
+                        BackgroundColor="#1649A1"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        IsVisible="{Binding MostrarCambioContrasena, Converter={StaticResource InverseBoolConverter}}"/>
+
+                <Button Text="Guardar Cambios"
+                        Command="{Binding GuardarCambiosPerfilCommand}"
+                        BackgroundColor="#28A745"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        IsVisible="{Binding ModoLectura, Converter={StaticResource InverseBoolConverter}}"/>
+
+                <Button Text="Cerrar Sesión"
+                        Command="{Binding CerrarSesionCommand}"
+                        BackgroundColor="White"
+                        TextColor="#E31E24"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        BorderColor="#E31E24"
+                        BorderWidth="2"/>
+
+                <Button Text="Volver"
+                        Command="{Binding VolverCommand}"
+                        BackgroundColor="White"
+                        TextColor="#1649A1"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        BorderColor="#1649A1"
+                        BorderWidth="2"/>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

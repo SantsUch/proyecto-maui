@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BomberosApp.MVVM.Views.AsignarIncidentesView"
+             Title="Asignar Incidentes"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header con filtros -->
+        <Frame Grid.Row="0"
+               BackgroundColor="#1649A1"
+               CornerRadius="15"
+               Padding="20"
+               Margin="15,15,15,0"
+               HasShadow="True">
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Gestión de Incidentes"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalTextAlignment="Center"/>
+
+                <Label Text="Seleccione un incidente para asignar"
+                       FontSize="14"
+                       TextColor="#FFD700"
+                       HorizontalTextAlignment="Center"/>
+
+                <!-- Filtros rápidos -->
+                <Grid ColumnDefinitions="*,60" ColumnSpacing="10">
+                    <Picker Grid.Column="0"
+                            Title="Estado"
+                            ItemsSource="{Binding EstadosFiltro}"
+                            SelectedItem="{Binding EstadoFiltroSeleccionado}"
+                            BackgroundColor="White"
+                            TextColor="Black"/>
+
+                    <Button Grid.Column="1"
+                            Text="🔄"
+                            Command="{Binding ActualizarListaCommand}"
+                            BackgroundColor="#FFD700"
+                            TextColor="Black"
+                            FontSize="16"
+                            HeightRequest="40"
+                            CornerRadius="8"
+                            HorizontalOptions="Fill"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Lista de incidentes sin asignar -->
+        <CollectionView Grid.Row="1"
+                       ItemsSource="{Binding IncidentesSinAsignar}"
+                       Margin="15,10,15,0"
+                       SelectionMode="Single"
+                       SelectedItem="{Binding IncidenteSeleccionado}">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" 
+                                   VerticalOptions="Center"
+                                   Spacing="15"
+                                   Padding="20">
+                    <Label Text="✅"
+                           FontSize="60"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="¡Excelente!"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="No hay incidentes pendientes de asignar"
+                           FontSize="14"
+                           TextColor="#666"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="White"
+                           CornerRadius="12"
+                           Padding="15"
+                           Margin="0,5"
+                           HasShadow="True">
+                        <Grid ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+
+                            <!-- Título e ID -->
+                            <Label Grid.Row="0" Grid.ColumnSpan="2"
+                                   Text="{Binding Titulo}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#333"
+                                   Margin="0,0,0,5"/>
+
+                            <Label Grid.Row="1" Grid.Column="0"
+                                   Text="{Binding Id, StringFormat='ID: {0}'}"
+                                   FontSize="12"
+                                   TextColor="#999"/>
+
+                            <!-- Estado actual -->
+                            <Frame Grid.Row="2" Grid.Column="0"
+                                   BackgroundColor="#FF8C00"
+                                   CornerRadius="15"
+                                   Padding="8,4"
+                                   HasShadow="False"
+                                   HorizontalOptions="Start"
+                                   Margin="0,5,0,0">
+                                <Label Text="{Binding Estado, TargetNullValue='Sin Asignar'}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="White"/>
+                            </Frame>
+
+                            <!-- Fecha -->
+                            <Label Grid.Row="3" Grid.Column="0"
+                                   Text="{Binding FechaReportado, StringFormat='📅 {0:dd/MM/yyyy HH:mm}'}"
+                                   FontSize="14"
+                                   TextColor="#666"
+                                   Margin="0,5,0,0"/>
+
+                            <!-- Ubicación -->
+                            <Label Grid.Row="4" Grid.Column="0"
+                                   Text="{Binding Ubicacion, StringFormat='📍 {0}'}"
+                                   FontSize="14"
+                                   TextColor="#666"
+                                   Margin="0,2,0,0"/>
+
+                            <!-- Botón Asignar -->
+                            <Button Grid.Row="1" Grid.RowSpan="4" Grid.Column="1"
+                                    Text="Asignar"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SeleccionarIncidenteCommand}"
+                                    CommandParameter="{Binding .}"
+                                    BackgroundColor="#E31E24"
+                                    TextColor="White"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    WidthRequest="80"
+                                    HeightRequest="40"
+                                    CornerRadius="8"
+                                    VerticalOptions="Center"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Panel de asignación -->
+        <Frame Grid.Row="2"
+               BackgroundColor="White"
+               CornerRadius="15"
+               Padding="20"
+               Margin="15"
+               HasShadow="True"
+               IsVisible="{Binding MostrarPanelAsignacion}">
+
+            <VerticalStackLayout Spacing="20">
+                <Label Text="Asignar Incidente"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="#1649A1"
+                       HorizontalTextAlignment="Center"/>
+
+                <Label Text="{Binding TituloIncidenteSeleccionado}"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#333"
+                       HorizontalTextAlignment="Center"
+                       LineBreakMode="WordWrap"/>
+
+                <!-- Categoría con Frame consistente -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Categoría del Incidente"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+                    <Frame BackgroundColor="#F0F0F0"
+                           CornerRadius="8"
+                           Padding="0"
+                           HasShadow="False">
+                        <Picker ItemsSource="{Binding CategoriasDisponibles}"
+                                SelectedItem="{Binding CategoriaSeleccionada}"
+                                Title="Seleccione una categoría"
+                                BackgroundColor="Transparent"
+                                TextColor="#333"
+                                FontSize="14"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Prioridad con colores -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Prioridad"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+                    <Frame BackgroundColor="{Binding PrioridadColorFondo}"
+                           CornerRadius="8"
+                           Padding="0"
+                           HasShadow="False">
+                        <Picker ItemsSource="{Binding PrioridadesDisponibles}"
+                                SelectedItem="{Binding PrioridadSeleccionada}"
+                                Title="Seleccione la prioridad"
+                                BackgroundColor="Transparent"
+                                TextColor="{Binding PrioridadColorTexto}"
+                                FontSize="14"
+                                FontAttributes="Bold"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Funcionario asignado con Frame consistente -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Asignar a Funcionario"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+                    <Frame BackgroundColor="#F0F0F0"
+                           CornerRadius="8"
+                           Padding="0"
+                           HasShadow="False">
+                        <Picker ItemsSource="{Binding FuncionariosDisponibles}"
+                                SelectedItem="{Binding FuncionarioSeleccionado}"
+                                ItemDisplayBinding="{Binding Nombre}"
+                                Title="Seleccione un funcionario"
+                                BackgroundColor="Transparent"
+                                TextColor="#333"
+                                FontSize="14"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Observaciones adicionales con Frame consistente -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Observaciones (Opcional)"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#1649A1"/>
+                    <Frame BackgroundColor="#F0F0F0"
+                           CornerRadius="8"
+                           Padding="5"
+                           HasShadow="False">
+                        <Editor Placeholder="Ingrese observaciones adicionales..."
+                                Text="{Binding ObservacionesAsignacion}"
+                                HeightRequest="80"
+                                BackgroundColor="Transparent"
+                                TextColor="#333"
+                                FontSize="14"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Botones de acción -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                    <Button Grid.Column="0"
+                            Text="Confirmar Asignación"
+                            Command="{Binding ConfirmarAsignacionCommand}"
+                            BackgroundColor="#1649A1"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            HeightRequest="45"
+                            CornerRadius="12"/>
+
+                    <Button Grid.Column="1"
+                            Text="Cancelar"
+                            Command="{Binding CancelarAsignacionCommand}"
+                            BackgroundColor="#E31E24"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            HeightRequest="45"
+                            CornerRadius="12"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

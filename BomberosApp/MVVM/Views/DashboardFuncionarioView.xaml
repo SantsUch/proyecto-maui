@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BomberosApp.MVVM.Views.DashboardFuncionarioView"
+             Title="Panel Funcionario"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Header -->
+            <Frame BackgroundColor="#1649A1" 
+                   CornerRadius="15" 
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{Binding Usuario.Nombre, StringFormat='Bienvenido, {0}'}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="Panel de Funcionario"
+                           FontSize="16"
+                           TextColor="#FFD700"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones principales -->
+            <Button Text="Ver Incidentes Asignados"
+                    Command="{Binding VerIncidentesAsignadosCommand}"
+                    BackgroundColor="#E31E24"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="60"
+                    CornerRadius="12"/>
+
+            <Button Text="Reportar Incidente"
+                    Command="{Binding ReportarIncidenteCommand}"
+                    BackgroundColor="#1649A1"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    CornerRadius="12"/>
+
+            <Button Text="Mi Perfil"
+                    Command="{Binding VerPerfilCommand}"
+                    BackgroundColor="#FFD700"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="12"/>
+
+            <Button Text="Cerrar Sesión"
+                    Command="{Binding CerrarSesionCommand}"
+                    BackgroundColor="White"
+                    TextColor="#E31E24"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="12"
+                    BorderColor="#E31E24"
+                    BorderWidth="2"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
