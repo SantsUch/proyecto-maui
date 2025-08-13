@@ -66,6 +66,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiXaml Update="MVVM\Views\GestionUsuariosView.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="MVVM\Views\HistorialReportesView.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

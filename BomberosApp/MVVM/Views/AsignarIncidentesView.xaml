@@ -169,7 +169,7 @@
                        HorizontalTextAlignment="Center"
                        LineBreakMode="WordWrap"/>
 
-                <!-- Categoría con Frame consistente -->
+                <!-- Categoría -->
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Categoría del Incidente"
                            FontSize="14"
@@ -208,12 +208,24 @@
                     </Frame>
                 </VerticalStackLayout>
 
-                <!-- Funcionario asignado con Frame consistente -->
+                <!-- Funcionario asignado con botón de actualizar -->
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Asignar a Funcionario"
-                           FontSize="14"
-                           FontAttributes="Bold"
-                           TextColor="#1649A1"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="Asignar a Funcionario"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#1649A1"/>
+                        <Button Grid.Column="1"
+                                Text="🔄"
+                                Command="{Binding ActualizarFuncionariosCommand}"
+                                BackgroundColor="#FFD700"
+                                TextColor="Black"
+                                FontSize="12"
+                                WidthRequest="30"
+                                HeightRequest="30"
+                                CornerRadius="15"/>
+                    </Grid>
                     <Frame BackgroundColor="#F0F0F0"
                            CornerRadius="8"
                            Padding="0"
@@ -226,9 +238,13 @@
                                 TextColor="#333"
                                 FontSize="14"/>
                     </Frame>
+                    <Label Text="{Binding MensajeFuncionarios}"
+                           FontSize="10"
+                           TextColor="#999"
+                           IsVisible="{Binding MostrarMensajeFuncionarios}"/>
                 </VerticalStackLayout>
 
-                <!-- Observaciones adicionales con Frame consistente -->
+                <!-- Observaciones adicionales -->
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Observaciones (Opcional)"
                            FontSize="14"
