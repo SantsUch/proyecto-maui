@@ -1,11 +1,12 @@
 ﻿using BomberosApp.MVVM.Models;
 using BomberosApp.MVVM.Repositories;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace BomberosApp.MVVM.ViewModels
 {
-    public class HistorialReportesViewModel
+    public class HistorialReportesViewModel : INotifyPropertyChanged
     {
         private readonly IncidentesRepository _incidentesRepository;
         private readonly INavigation _navigation;
@@ -15,6 +16,7 @@ namespace BomberosApp.MVVM.ViewModels
 
         public ICommand VerDetalleIncidenteCommand { get; set; }
         public ICommand VolverCommand { get; set; }
+        public ICommand ActualizarCommand { get; set; }
 
         public HistorialReportesViewModel(INavigation navigation, UsuarioModel usuario)
         {
@@ -26,58 +28,113 @@ namespace BomberosApp.MVVM.ViewModels
 
             VerDetalleIncidenteCommand = new Command<IncidenteModel>(async (incidente) => await VerDetalle(incidente));
             VolverCommand = new Command(async () => await _navigation.PopAsync());
+            ActualizarCommand = new Command(async () => await CargarIncidentes());
 
-            CargarIncidentes();
+            _ = CargarIncidentes(); // Llamada asíncrona sin await para no bloquear constructor
         }
 
         private async Task CargarIncidentes()
         {
             try
             {
-                // Por ahora mostrar algunos datos de ejemplo
-                // Más adelante aquí cargarías los incidentes reales del usuario desde Firebase
                 MisIncidentes.Clear();
 
-                // Ejemplo temporal - puedes quitar esto cuando implementes Firebase
-                var ejemplos = new List<IncidenteModel>
+                if (string.IsNullOrEmpty(Usuario.Id))
                 {
-                    new IncidenteModel
-                    {
-                        Titulo = "Incendio en casa",
-                        FechaReportado = DateTime.Now.AddDays(-2),
-                        Ubicacion = "San José Centro",
-                        Estado = "En Proceso"
-                    },
-                    new IncidenteModel
-                    {
-                        Titulo = "Accidente de tránsito",
-                        FechaReportado = DateTime.Now.AddDays(-5),
-                        Ubicacion = "Cartago",
-                        Estado = "Resuelto"
-                    }
-                };
+                    Console.WriteLine("Usuario.Id está vacío - mostrando datos de ejemplo");
+                    await CargarDatosEjemplo();
+                    return;
+                }
 
-                foreach (var incidente in ejemplos)
+                Console.WriteLine($"Cargando incidentes para usuario: {Usuario.Id}");
+                var incidentesUsuario = await _incidentesRepository.ObtenerPorUsuarioAsync(Usuario.Id);
+
+                Console.WriteLine($"Incidentes encontrados en Firebase: {incidentesUsuario.Count}");
+
+                if (incidentesUsuario.Count == 0)
+                {
+                    Console.WriteLine("No hay incidentes en Firebase - mostrando datos de ejemplo");
+                    await CargarDatosEjemplo();
+                    return;
+                }
+
+                foreach (var incidente in incidentesUsuario)
                 {
                     MisIncidentes.Add(incidente);
                 }
+
+                OnPropertyChanged(nameof(MisIncidentes));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cargar incidentes: {ex.Message}");
-                await Application.Current.MainPage.DisplayAlert("Error",
-                    "No se pudieron cargar los reportes", "OK");
+                Console.WriteLine($"Error al cargar incidentes desde Firebase: {ex.Message}");
+                await CargarDatosEjemplo();
             }
+        }
+
+        private async Task CargarDatosEjemplo()
+        {
+            // Datos de ejemplo para cuando no hay datos reales o hay error
+            var ejemplos = new List<IncidenteModel>
+            {
+                new IncidenteModel
+                {
+                    Titulo = "Incendio en casa",
+                    FechaReportado = DateTime.Now.AddDays(-2),
+                    Ubicacion = "San José Centro",
+                    Estado = "En Proceso"
+                },
+                new IncidenteModel
+                {
+                    Titulo = "Accidente de tránsito",
+                    FechaReportado = DateTime.Now.AddDays(-5),
+                    Ubicacion = "Cartago",
+                    Estado = "Resuelto"
+                }
+            };
+
+            foreach (var incidente in ejemplos)
+            {
+                MisIncidentes.Add(incidente);
+            }
+
+            OnPropertyChanged(nameof(MisIncidentes));
+            await Task.Delay(100); // Pequeño delay para simular carga
         }
 
         private async Task VerDetalle(IncidenteModel incidente)
         {
             if (incidente != null)
             {
-                await Application.Current.MainPage.DisplayAlert("Detalle",
-                    $"Título: {incidente.Titulo}\nFecha: {incidente.FechaReportado:dd/MM/yyyy}\nEstado: {incidente.Estado}",
-                    "OK");
+                var detalles = $"Título: {incidente.Titulo}\n\n" +
+                              $"Descripción: {incidente.Descripcion}\n\n" +
+                              $"Ubicación: {incidente.Ubicacion}\n\n" +
+                              $"Estado: {incidente.Estado}\n\n" +
+                              $"Fecha: {incidente.FechaReportado:dd/MM/yyyy HH:mm}";
+
+                if (!string.IsNullOrEmpty(incidente.FuncionarioAsignadoNombre))
+                {
+                    detalles += $"\n\nFuncionario: {incidente.FuncionarioAsignadoNombre}";
+                }
+
+                if (!string.IsNullOrEmpty(incidente.Categoria))
+                {
+                    detalles += $"\n\nCategoría: {incidente.Categoria}";
+                }
+
+                if (!string.IsNullOrEmpty(incidente.Prioridad))
+                {
+                    detalles += $"\n\nPrioridad: {incidente.Prioridad}";
+                }
+
+                await Application.Current.MainPage.DisplayAlert("Detalle del Incidente", detalles, "OK");
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

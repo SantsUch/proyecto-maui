@@ -61,6 +61,7 @@
                         <Entry Text="{Binding Usuario.Nombre}"
                                IsReadOnly="{Binding ModoLectura}"
                                BackgroundColor="#F0F0F0"
+                               TextColor="Black"
                                FontSize="14"/>
                     </VerticalStackLayout>
 
@@ -73,6 +74,7 @@
                         <Entry Text="{Binding Usuario.Correo}"
                                IsReadOnly="True"
                                BackgroundColor="#F0F0F0"
+                               TextColor="Black"
                                FontSize="14"/>
                     </VerticalStackLayout>
 
@@ -85,6 +87,7 @@
                         <Entry Text="{Binding Usuario.Rol}"
                                IsReadOnly="True"
                                BackgroundColor="#F0F0F0"
+                               TextColor="Black"
                                FontSize="14"/>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
@@ -105,17 +108,20 @@
                     <Entry Text="{Binding ContrasenaActual}"
                            IsPassword="True"
                            Placeholder="Contraseña actual"
-                           BackgroundColor="#F0F0F0"/>
+                           BackgroundColor="#F0F0F0"
+                           TextColor="Black"/>
 
                     <Entry Text="{Binding NuevaContrasena}"
                            IsPassword="True"
                            Placeholder="Nueva contraseña"
-                           BackgroundColor="#F0F0F0"/>
+                           BackgroundColor="#F0F0F0"
+                           TextColor="Black"/>
 
                     <Entry Text="{Binding ConfirmarNuevaContrasena}"
                            IsPassword="True"
                            Placeholder="Confirmar nueva contraseña"
-                           BackgroundColor="#F0F0F0"/>
+                           BackgroundColor="#F0F0F0"
+                           TextColor="Black"/>
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
                         <Button Grid.Column="0"

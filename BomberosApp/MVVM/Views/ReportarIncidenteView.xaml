@@ -5,8 +5,8 @@
              Title="Reportar Incidente"
              BackgroundColor="#F5F5F5">
     <!-- Fondo claro -->
-    
-    
+
+
     <ScrollView>
         <VerticalStackLayout Padding="25" Spacing="20">
             <Frame Padding="15"
@@ -24,9 +24,10 @@
             <Label Text="Título"
                    FontSize="16"
                    TextColor="#1649A1"/>
-                        <Entry Placeholder="Descripción"
+            <Entry Placeholder="Descripción"
                    Text="{Binding IncidenteTO.Titulo}"
                    BackgroundColor="White"
+                   TextColor="Black"
                    HeightRequest="45"
                    FontSize="14"
                    Margin="0,0,0,10"/>
@@ -39,6 +40,7 @@
                     HeightRequest="120"
                     FontSize="14"
                     BackgroundColor="White"
+                    TextColor="Black"
                     Text="{Binding IncidenteTO.Descripcion}"
                     Margin="0,0,0,10" />
 
@@ -48,10 +50,11 @@
             <Entry Placeholder="Ej: Calle Central, San José"
                    Text="{Binding IncidenteTO.Ubicacion}"
                    BackgroundColor="White"
+                   TextColor="Black"
                    HeightRequest="45"
                    FontSize="14"
                    Margin="0,0,0,10"/>
-            
+
             <!-- 
             <Label Text="Categoría"
                    FontSize="16"
@@ -113,4 +116,3 @@
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
-
