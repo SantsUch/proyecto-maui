@@ -89,12 +89,38 @@ namespace BomberosApp.MVVM.Repositories
             }
         }
 
-        public async Task EliminarIncidenteAsync(string key)
+
+        public async Task EliminarIncidenteAsync(string incidenteId)
         {
-            await _client
-                .Child("Incidentes")
-                .Child(key)
-                .DeleteAsync();
+            try
+            {
+                var incidentes = await ObtenerTodosAsync();
+                var incidenteAEliminar = incidentes.FirstOrDefault(i => i.Object.Id == incidenteId);
+
+                if (incidenteAEliminar != null)
+                {
+                    if (incidenteAEliminar.Object.Estado == IncidenteModel.Estados.Resuelto)
+                    {
+                        await _client
+                            .Child("Incidentes")
+                            .Child(incidenteAEliminar.Key)
+                            .DeleteAsync();
+                    }
+                    else
+                    {
+                        throw new Exception("No se puede eliminar un incidente que no esté resuelto.");
+                    }
+                }
+                else
+                {
+                    throw new Exception("Incidente no encontrado para eliminar");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar incidente: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task AsignarIncidenteAsync(string incidenteId, string funcionarioId, string funcionarioNombre, string categoria, string prioridad, string observaciones = "")
