@@ -58,6 +58,10 @@ namespace BomberosApp.MVVM.ViewModels
         public ICommand SeleccionarIncidenteCommand { get; set; }
         public ICommand ConfirmarAsignacionCommand { get; set; }
         public ICommand CancelarAsignacionCommand { get; set; }
+        public ICommand EliminarIncidenteCommand { get; set; }
+        public ICommand CambiarEstadoCommand { get; set; }
+
+
 
         public AsignarIncidentesViewModel(INavigation navigation)
         {
@@ -108,7 +112,9 @@ namespace BomberosApp.MVVM.ViewModels
                 "Todos",
                 "Sin Asignar",
                 "Reportado",
-                "En Proceso"
+                "Asignado",
+                "En Proceso",
+                "Resuelto"
             };
 
             EstadoFiltroSeleccionado = "Sin Asignar";
@@ -121,6 +127,40 @@ namespace BomberosApp.MVVM.ViewModels
             SeleccionarIncidenteCommand = new Command<IncidenteModel>(SeleccionarIncidente);
             ConfirmarAsignacionCommand = new Command(async () => await ConfirmarAsignacion());
             CancelarAsignacionCommand = new Command(CancelarAsignacion);
+            EliminarIncidenteCommand = new Command<IncidenteModel>(async (incidente) => await EliminarIncidente(incidente));
+            CambiarEstadoCommand = new Command<IncidenteModel>(async (incidente) => await CambiarEstado(incidente));
+
+        }
+
+        private async Task CambiarEstado(IncidenteModel incidente)
+        {
+            if (incidente == null) return;
+
+            string nuevoEstado = await Application.Current.MainPage.DisplayActionSheet(
+                "Cambiar estado del incidente",
+                "Cancelar",
+                null,
+                IncidenteModel.Estados.Reportado,
+                IncidenteModel.Estados.Asignado,
+                IncidenteModel.Estados.EnProceso,
+                IncidenteModel.Estados.Resuelto,
+                IncidenteModel.Estados.Cancelado);
+
+            if (!string.IsNullOrEmpty(nuevoEstado) && nuevoEstado != "Cancelar")
+            {
+                try
+                {
+                    await _incidentesRepository.CambiarEstadoIncidenteAsync(incidente.Id, nuevoEstado);
+
+                    incidente.Estado = nuevoEstado;
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "El estado del incidente ha sido actualizado.", "OK");
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo cambiar el estado: {ex.Message}", "OK");
+                }
+            }
         }
 
         private async Task CargarDatos()
@@ -167,6 +207,38 @@ namespace BomberosApp.MVVM.ViewModels
                 "Sin Asignar" => string.IsNullOrEmpty(incidente.Estado) || incidente.Estado == "Reportado",
                 _ => incidente.Estado == EstadoFiltroSeleccionado
             };
+        }
+
+        // Método para eliminar un incidente
+        private async Task EliminarIncidente(IncidenteModel incidente)
+        {
+            if (incidente == null) return;
+
+            // 1. Mostramos una alerta de confirmación
+            bool confirmacion = await Application.Current.MainPage.DisplayAlert(
+                "Confirmar Eliminación",
+                $"¿Estás seguro de que deseas eliminar el incidente '{incidente.Titulo}'? Esta acción no se puede deshacer.",
+                "Sí, Eliminar",
+                "Cancelar");
+
+            if (confirmacion)
+            {
+                try
+                {
+                    // 2. Llamamos al repositorio para borrarlo de la base de datos
+                    await _incidentesRepository.EliminarIncidenteAsync(incidente.Id);
+
+                    // 3. Lo quitamos de la lista para que la UI se actualice al instante
+                    IncidentesSinAsignar.Remove(incidente);
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "El incidente ha sido eliminado.", "OK");
+                }
+                catch (Exception ex)
+                {
+                    // Si algo sale mal, mostramos el error
+                    await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo eliminar el incidente: {ex.Message}", "OK");
+                }
+            }
         }
 
         private async Task CargarFuncionarios()
