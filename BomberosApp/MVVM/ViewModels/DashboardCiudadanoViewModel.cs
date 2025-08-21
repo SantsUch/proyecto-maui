@@ -112,10 +112,13 @@ namespace BomberosApp.MVVM.ViewModels
             {
                 IncidentesRecientes.Clear();
 
+                // Inicializar valores en 0 por defecto
+                TotalIncidentes = 0;
+                IncidentesActivos = 0;
+
                 if (string.IsNullOrEmpty(UsuarioActual.Id))
                 {
-                    Console.WriteLine("Usuario.Id está vacío - mostrando datos de ejemplo");
-                    CargarDatosEjemplo();
+                    Console.WriteLine("Usuario.Id está vacío - manteniendo valores en 0");
                     return;
                 }
 
@@ -126,15 +129,14 @@ namespace BomberosApp.MVVM.ViewModels
 
                 if (incidentesUsuario.Count == 0)
                 {
-                    Console.WriteLine("No hay incidentes en Firebase - mostrando datos de ejemplo");
-                    CargarDatosEjemplo();
+                    Console.WriteLine("No hay incidentes en Firebase - manteniendo valores en 0");
                     return;
                 }
 
-                // Calcular estadísticas reales
+                // Calcular estadísticas
                 TotalIncidentes = incidentesUsuario.Count;
 
-                // Estados que se consideran "En Proceso" (NO cerrados)
+                // Estados que se consideran "En Proceso"
                 var estadosEnProceso = new[] { "Reportado", "En Revisión", "Asignado", "En Proceso", "En Camino" };
                 IncidentesActivos = incidentesUsuario.Count(i =>
                     !string.IsNullOrEmpty(i.Estado) &&
@@ -153,42 +155,9 @@ namespace BomberosApp.MVVM.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al cargar incidentes: {ex.Message}");
-                CargarDatosEjemplo();
-            }
-        }
-
-        private void CargarDatosEjemplo()
-        {
-            // Datos de ejemplo solo como fallback
-            var ejemplos = new List<IncidenteModel>
-            {
-                new IncidenteModel
-                {
-                    Titulo = "Incendio reportado",
-                    FechaReportado = DateTime.Now.AddHours(-2),
-                    Estado = "En Proceso",
-                    UsuarioId = UsuarioActual.Id
-                },
-                new IncidenteModel
-                {
-                    Titulo = "Accidente menor",
-                    FechaReportado = DateTime.Now.AddDays(-1),
-                    Estado = "Resuelto",
-                    UsuarioId = UsuarioActual.Id
-                }
-            };
-
-            TotalIncidentes = ejemplos.Count;
-
-            // Aplicar la misma lógica de estados en proceso
-            var estadosEnProceso = new[] { "Reportado", "En Revisión", "Asignado", "En Proceso", "En Camino" };
-            IncidentesActivos = ejemplos.Count(i =>
-                !string.IsNullOrEmpty(i.Estado) &&
-                estadosEnProceso.Contains(i.Estado));
-
-            foreach (var incidente in ejemplos)
-            {
-                IncidentesRecientes.Add(incidente);
+                // En caso de error, mantener los valores en 0
+                TotalIncidentes = 0;
+                IncidentesActivos = 0;
             }
         }
 

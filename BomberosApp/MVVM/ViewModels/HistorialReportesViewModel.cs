@@ -41,8 +41,8 @@ namespace BomberosApp.MVVM.ViewModels
 
                 if (string.IsNullOrEmpty(Usuario.Id))
                 {
-                    Console.WriteLine("Usuario.Id está vacío - mostrando datos de ejemplo");
-                    await CargarDatosEjemplo();
+                    Console.WriteLine("Usuario.Id está vacío - no hay incidentes para mostrar");
+                    OnPropertyChanged(nameof(MisIncidentes));
                     return;
                 }
 
@@ -53,8 +53,8 @@ namespace BomberosApp.MVVM.ViewModels
 
                 if (incidentesUsuario.Count == 0)
                 {
-                    Console.WriteLine("No hay incidentes en Firebase - mostrando datos de ejemplo");
-                    await CargarDatosEjemplo();
+                    Console.WriteLine("No hay incidentes en Firebase para este usuario");
+                    OnPropertyChanged(nameof(MisIncidentes));
                     return;
                 }
 
@@ -68,38 +68,9 @@ namespace BomberosApp.MVVM.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al cargar incidentes desde Firebase: {ex.Message}");
-                await CargarDatosEjemplo();
+                // En caso de error
+                OnPropertyChanged(nameof(MisIncidentes));
             }
-        }
-
-        private async Task CargarDatosEjemplo()
-        {
-            // Datos de ejemplo para cuando no hay datos reales o hay error
-            var ejemplos = new List<IncidenteModel>
-            {
-                new IncidenteModel
-                {
-                    Titulo = "Incendio en casa",
-                    FechaReportado = DateTime.Now.AddDays(-2),
-                    Ubicacion = "San José Centro",
-                    Estado = "En Proceso"
-                },
-                new IncidenteModel
-                {
-                    Titulo = "Accidente de tránsito",
-                    FechaReportado = DateTime.Now.AddDays(-5),
-                    Ubicacion = "Cartago",
-                    Estado = "Resuelto"
-                }
-            };
-
-            foreach (var incidente in ejemplos)
-            {
-                MisIncidentes.Add(incidente);
-            }
-
-            OnPropertyChanged(nameof(MisIncidentes));
-            await Task.Delay(100); // Pequeño delay para simular carga
         }
 
         private async Task VerDetalle(IncidenteModel incidente)
