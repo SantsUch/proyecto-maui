@@ -59,7 +59,7 @@ namespace BomberosApp.MVVM.ViewModels
         public ICommand ConfirmarAsignacionCommand { get; set; }
         public ICommand CancelarAsignacionCommand { get; set; }
         public ICommand EliminarIncidenteCommand { get; set; }
-        public ICommand CambiarEstadoCommand { get; set; }
+        public ICommand CambiarEstadoCommand { get; set; } 
 
 
 

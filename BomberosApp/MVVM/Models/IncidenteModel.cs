@@ -15,6 +15,10 @@ namespace BomberosApp.MVVM.Models
         public string Imagen { get; set; } = string.Empty;
         public DateTime FechaReportado { get; set; } = DateTime.Now;
 
+        // Coordenadas de Ubicación
+        public double Latitud { get; set; }
+        public double Longitud { get; set; }
+
         // Campos para asignación
         public string Estado { get; set; } = "Reportado";
         public string FuncionarioAsignadoId { get; set; } = string.Empty;
