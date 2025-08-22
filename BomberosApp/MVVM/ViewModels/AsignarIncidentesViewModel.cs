@@ -30,6 +30,13 @@ namespace BomberosApp.MVVM.ViewModels
         public bool MostrarPanelAsignacion => IncidenteSeleccionado != null;
         public string TituloIncidenteSeleccionado => IncidenteSeleccionado != null ? $"Incidente: {IncidenteSeleccionado.Titulo}" : "";
 
+        // NUEVAS PROPIEDADES PARA MOSTRAR DETALLES
+        public string DescripcionIncidenteSeleccionado => IncidenteSeleccionado?.Descripcion ?? "";
+        public string UbicacionIncidenteSeleccionado => IncidenteSeleccionado?.Ubicacion ?? "";
+        public string FechaIncidenteSeleccionado => IncidenteSeleccionado?.FechaReportado.ToString("dd/MM/yyyy HH:mm") ?? "";
+        public bool MostrarImagenIncidente => !string.IsNullOrEmpty(IncidenteSeleccionado?.ImagenBase64);
+        public string ImagenIncidenteBase64 => IncidenteSeleccionado?.ImagenBase64 ?? "";
+
         // Propiedades para mensajes informativos
         public string MensajeFuncionarios { get; set; }
         public bool MostrarMensajeFuncionarios => !string.IsNullOrEmpty(MensajeFuncionarios);
@@ -59,9 +66,7 @@ namespace BomberosApp.MVVM.ViewModels
         public ICommand ConfirmarAsignacionCommand { get; set; }
         public ICommand CancelarAsignacionCommand { get; set; }
         public ICommand EliminarIncidenteCommand { get; set; }
-        public ICommand CambiarEstadoCommand { get; set; } 
-
-
+        public ICommand CambiarEstadoCommand { get; set; } // RESTAURADO: Tanto admin como bomberos pueden cambiar estados
 
         public AsignarIncidentesViewModel(INavigation navigation)
         {
@@ -123,15 +128,15 @@ namespace BomberosApp.MVVM.ViewModels
         private void InitializeCommands()
         {
             ActualizarListaCommand = new Command(async () => await CargarIncidentes());
-            ActualizarFuncionariosCommand = new Command(async () => await ActualizarFuncionarios()); // AGREGAR ESTA LÍNEA
+            ActualizarFuncionariosCommand = new Command(async () => await ActualizarFuncionarios());
             SeleccionarIncidenteCommand = new Command<IncidenteModel>(SeleccionarIncidente);
             ConfirmarAsignacionCommand = new Command(async () => await ConfirmarAsignacion());
             CancelarAsignacionCommand = new Command(CancelarAsignacion);
             EliminarIncidenteCommand = new Command<IncidenteModel>(async (incidente) => await EliminarIncidente(incidente));
-            CambiarEstadoCommand = new Command<IncidenteModel>(async (incidente) => await CambiarEstado(incidente));
-
+            CambiarEstadoCommand = new Command<IncidenteModel>(async (incidente) => await CambiarEstado(incidente)); // RESTAURADO
         }
 
+        // RESTAURADO: Método para cambiar estado - Tanto admin como bomberos pueden cambiar estados
         private async Task CambiarEstado(IncidenteModel incidente)
         {
             if (incidente == null) return;
@@ -162,6 +167,8 @@ namespace BomberosApp.MVVM.ViewModels
                 }
             }
         }
+
+        // REMOVIDO: Comentario que decía "Solo bomberos pueden cambiar estados"
 
         private async Task CargarDatos()
         {
@@ -326,10 +333,15 @@ namespace BomberosApp.MVVM.ViewModels
             FuncionarioSeleccionado = null;
             ObservacionesAsignacion = string.Empty;
 
-            // Notificar TODOS los cambios
+            // Notificar TODOS los cambios INCLUYENDO LAS NUEVAS PROPIEDADES DE DETALLES
             OnPropertyChanged(nameof(IncidenteSeleccionado));
             OnPropertyChanged(nameof(MostrarPanelAsignacion));
             OnPropertyChanged(nameof(TituloIncidenteSeleccionado));
+            OnPropertyChanged(nameof(DescripcionIncidenteSeleccionado));
+            OnPropertyChanged(nameof(UbicacionIncidenteSeleccionado));
+            OnPropertyChanged(nameof(FechaIncidenteSeleccionado));
+            OnPropertyChanged(nameof(MostrarImagenIncidente));
+            OnPropertyChanged(nameof(ImagenIncidenteBase64));
             OnPropertyChanged(nameof(CategoriaSeleccionada));
             OnPropertyChanged(nameof(PrioridadSeleccionada));
             OnPropertyChanged(nameof(PrioridadColorFondo));
@@ -409,39 +421,6 @@ namespace BomberosApp.MVVM.ViewModels
             }
         }
 
-        private bool ValidarAsignacion()
-        {
-            if (IncidenteSeleccionado == null)
-            {
-                Application.Current.MainPage.DisplayAlert("Error",
-                    "Debe seleccionar un incidente", "OK");
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(CategoriaSeleccionada))
-            {
-                Application.Current.MainPage.DisplayAlert("Error",
-                    "Debe seleccionar una categoría", "OK");
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(PrioridadSeleccionada))
-            {
-                Application.Current.MainPage.DisplayAlert("Error",
-                    "Debe seleccionar una prioridad", "OK");
-                return false;
-            }
-
-            if (FuncionarioSeleccionado == null)
-            {
-                Application.Current.MainPage.DisplayAlert("Error",
-                    "Debe seleccionar un funcionario", "OK");
-                return false;
-            }
-
-            return true;
-        }
-
         private void CancelarAsignacion()
         {
             LimpiarSeleccion();
@@ -455,10 +434,15 @@ namespace BomberosApp.MVVM.ViewModels
             PrioridadSeleccionada = null;
             ObservacionesAsignacion = string.Empty;
 
-            // Notificar TODOS los cambios
+            // Notificar TODOS los cambios INCLUYENDO LAS NUEVAS PROPIEDADES DE DETALLES
             OnPropertyChanged(nameof(IncidenteSeleccionado));
             OnPropertyChanged(nameof(MostrarPanelAsignacion));
             OnPropertyChanged(nameof(TituloIncidenteSeleccionado));
+            OnPropertyChanged(nameof(DescripcionIncidenteSeleccionado));
+            OnPropertyChanged(nameof(UbicacionIncidenteSeleccionado));
+            OnPropertyChanged(nameof(FechaIncidenteSeleccionado));
+            OnPropertyChanged(nameof(MostrarImagenIncidente));
+            OnPropertyChanged(nameof(ImagenIncidenteBase64));
             OnPropertyChanged(nameof(CategoriaSeleccionada));
             OnPropertyChanged(nameof(PrioridadSeleccionada));
             OnPropertyChanged(nameof(FuncionarioSeleccionado));

@@ -68,24 +68,23 @@ namespace BomberosApp.MVVM.ViewModels
                         await _navigation.PushAsync(new DashboardCiudadanoView(usuario));
                         break;
                     case "Funcionario":
-                        await _navigation.PushAsync(new DashboardFuncionarioView(usuario)); // Por implementar
+                        await _navigation.PushAsync(new DashboardFuncionarioView(usuario));
                         break;
                     case "Administrador":
-                        await _navigation.PushAsync(new AsignarIncidentesView());
+                        // Mostrar dashboard de administrador con opciones
+                        await _navigation.PushAsync(new DashboardAdministradorView(usuario));
                         break;
                     default:
                         await ShowMessage("Rol no reconocido", false);
                         break;
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al iniciar sesión: {ex}");
                 await ShowMessage("Ocurrió un error durante el inicio de sesión", false);
             }
         }
-
 
         private async Task ForgotPassword()
         {
@@ -116,7 +115,5 @@ namespace BomberosApp.MVVM.ViewModels
             var toast = Toast.Make(message, ToastDuration.Short, 14);
             await toast.Show();
         }
-
     }
 }
-

@@ -10,6 +10,7 @@ namespace BomberosApp.MVVM.ViewModels
 
         public UsuarioModel Usuario { get; set; }
 
+        public ICommand AsignarIncidentesCommand { get; set; }
         public ICommand VerIncidentesAsignadosCommand { get; set; }
         public ICommand ReportarIncidenteCommand { get; set; }
         public ICommand VerPerfilCommand { get; set; }
@@ -20,25 +21,33 @@ namespace BomberosApp.MVVM.ViewModels
             _navigation = navigation;
             Usuario = usuario ?? new UsuarioModel { Nombre = "Funcionario" };
 
+            AsignarIncidentesCommand = new Command(async () => await AsignarIncidentes());
             VerIncidentesAsignadosCommand = new Command(async () => await VerIncidentesAsignados());
             ReportarIncidenteCommand = new Command(async () => await ReportarIncidente());
             VerPerfilCommand = new Command(async () => await VerPerfil());
             CerrarSesionCommand = new Command(async () => await CerrarSesion());
         }
 
+        private async Task AsignarIncidentes()
+        {
+            // Los funcionarios SÍ pueden asignar incidentes
+            await _navigation.PushAsync(new AsignarIncidentesView(Usuario));
+        }
+
         private async Task VerIncidentesAsignados()
         {
-            await Application.Current.MainPage.DisplayAlert("Información", "Funcionalidad en desarrollo", "OK");
+            // Navegar a la vista de incidentes asignados al funcionario
+            await _navigation.PushAsync(new MisIncidentesAsignadosView(Usuario));
         }
 
         private async Task ReportarIncidente()
         {
-            await _navigation.PushAsync(new ReportarIncidenteView());
+            await _navigation.PushAsync(new ReportarIncidenteView(Usuario));
         }
 
         private async Task VerPerfil()
         {
-            await Application.Current.MainPage.DisplayAlert("Información", "Funcionalidad en desarrollo", "OK");
+            await _navigation.PushAsync(new PerfilUsuarioView(Usuario));
         }
 
         private async Task CerrarSesion()

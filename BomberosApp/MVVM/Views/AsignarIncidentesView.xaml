@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:BomberosApp.Converters"
              x:Class="BomberosApp.MVVM.Views.AsignarIncidentesView"
              Title="Asignar Incidentes"
              BackgroundColor="#F5F5F5">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:Base64ToImageSourceConverter x:Key="Base64Converter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto">
 
@@ -131,14 +138,9 @@
                                         FontAttributes="Bold"
                                         WidthRequest="80"
                                         HeightRequest="40"
-                                        CornerRadius="8">
-                                    <Button.Triggers>
-                                        <DataTrigger TargetType="Button" Binding="{Binding Estado}" Value="Resuelto">
-                                            <Setter Property="IsVisible" Value="False" />
-                                        </DataTrigger>
-                                    </Button.Triggers>
-                                </Button>
+                                        CornerRadius="8"/>
 
+                                <!-- RESTAURADO: Botón Estado - Tanto admin como bomberos pueden cambiar estados -->
                                 <Button Text="Estado"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CambiarEstadoCommand}"
                                         CommandParameter="{Binding .}"
@@ -159,14 +161,7 @@
                                         FontAttributes="Bold"
                                         WidthRequest="80"
                                         HeightRequest="40"
-                                        CornerRadius="8"
-                                        IsVisible="False">
-                                    <Button.Triggers>
-                                        <DataTrigger TargetType="Button" Binding="{Binding Estado}" Value="Resuelto">
-                                            <Setter Property="IsVisible" Value="True" />
-                                        </DataTrigger>
-                                    </Button.Triggers>
-                                </Button>
+                                        CornerRadius="8"/>
 
                             </VerticalStackLayout>
                         </Grid>
@@ -175,6 +170,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
+        <!-- Panel de asignación CON DETALLES DEL INCIDENTE -->
         <Frame Grid.Row="2"
                BackgroundColor="White"
                CornerRadius="15"
@@ -189,6 +185,51 @@
                            FontAttributes="Bold"
                            TextColor="#1649A1"
                            HorizontalTextAlignment="Center"/>
+
+                    <!-- NUEVA SECCIÓN: Detalles del incidente seleccionado -->
+                    <Frame BackgroundColor="#F8F9FA"
+                           CornerRadius="10"
+                           Padding="15"
+                           HasShadow="False">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Detalles del Incidente"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="#1649A1"/>
+
+                            <Label Text="{Binding TituloIncidenteSeleccionado}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#333"
+                                   LineBreakMode="WordWrap"/>
+
+                            <Label Text="{Binding DescripcionIncidenteSeleccionado, StringFormat='Descripción: {0}'}"
+                                   FontSize="12"
+                                   TextColor="#666"
+                                   LineBreakMode="WordWrap"/>
+
+                            <Label Text="{Binding UbicacionIncidenteSeleccionado, StringFormat='Ubicación: {0}'}"
+                                   FontSize="12"
+                                   TextColor="#666"
+                                   LineBreakMode="WordWrap"/>
+
+                            <Label Text="{Binding FechaIncidenteSeleccionado, StringFormat='Fecha: {0}'}"
+                                   FontSize="12"
+                                   TextColor="#666"/>
+
+                            <!-- Imagen del incidente si existe -->
+                            <Frame IsVisible="{Binding MostrarImagenIncidente}"
+                                   BackgroundColor="White"
+                                   CornerRadius="8"
+                                   Padding="5"
+                                   HasShadow="True"
+                                   HeightRequest="150">
+                                <Image Source="{Binding ImagenIncidenteBase64, Converter={StaticResource Base64Converter}}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="140"/>
+                            </Frame>
+                        </VerticalStackLayout>
+                    </Frame>
 
                     <Label Text="{Binding TituloIncidenteSeleccionado}"
                            FontSize="14"
