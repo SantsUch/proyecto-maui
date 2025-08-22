@@ -47,8 +47,7 @@ namespace BomberosApp.MVVM.ViewModels
 
             LimpiarFormulario();
 
-            // Opcional: Navegar al login después del registro
-            await _navigation.PopAsync(); // o PushAsync(new LoginPage()) si quieres ir hacia adelante
+            await _navigation.PopAsync();
         }
 
         private bool ValidarCampos()

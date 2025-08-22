@@ -1,14 +1,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:BomberosApp.MVVM.ViewModels"
-             xmlns:conv="clr-namespace:BomberosApp.Converters"
+             xmlns:converters="clr-namespace:BomberosApp.Converters"
              x:Class="BomberosApp.MVVM.Views.ReportarIncidenteView"
              Title="Reportar Incidente"
              BackgroundColor="#F5F5F5">
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <conv:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter" />
+            <converters:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter" />
+            <converters:Base64ToImageSourceConverter x:Key="Base64Converter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -86,8 +87,8 @@
                    CornerRadius="10"
                    Padding="0"
                    Margin="0,10"
-                   IsVisible="{Binding IncidenteTO.Imagen, Converter={StaticResource StringNotNullOrEmptyConverter}}">
-                <Image Source="{Binding IncidenteTO.Imagen}"
+                   IsVisible="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource StringNotNullOrEmptyConverter}}">
+                <Image Source="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource Base64Converter}}"
                        HeightRequest="500"
                        Aspect="AspectFill"/>
             </Frame>

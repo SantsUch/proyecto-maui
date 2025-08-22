@@ -99,7 +99,6 @@ namespace BomberosApp.MVVM.ViewModels
             }
         }
 
-
         private async Task SeleccionarImagen()
         {
             try
@@ -127,10 +126,12 @@ namespace BomberosApp.MVVM.ViewModels
 
                 if (photo != null)
                 {
-                    var ruta = photo.FullPath;
+                    using var stream = await photo.OpenReadAsync();
+                    using var ms = new MemoryStream();
+                    await stream.CopyToAsync(ms);
 
-                    // Guardar en el modelo del incidente
-                    IncidenteTO.Imagen = ruta;
+                    // Convertir a Base64 y guardar en el modelo
+                    IncidenteTO.ImagenBase64 = Convert.ToBase64String(ms.ToArray());
 
                     await ShowMessage("Imagen seleccionada correctamente.", true);
                 }

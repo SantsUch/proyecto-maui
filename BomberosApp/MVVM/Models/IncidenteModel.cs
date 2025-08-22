@@ -13,6 +13,7 @@ namespace BomberosApp.MVVM.Models
         public string Ubicacion { get; set; } = string.Empty;
         public string Prioridad { get; set; } = string.Empty;
         public string Imagen { get; set; } = string.Empty;
+        public string ImagenBase64 { get; set; }
         public DateTime FechaReportado { get; set; } = DateTime.Now;
 
         // Coordenadas de Ubicación
