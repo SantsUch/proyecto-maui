@@ -27,7 +27,7 @@
                        HorizontalTextAlignment="Center"/>
 
                 <Label Text="Incidentes Asignados"
-                       FontSize="20"
+                       FontSize="15"
                        FontAttributes="Bold"
                        TextColor="White"
                        HorizontalTextAlignment="Center"/>

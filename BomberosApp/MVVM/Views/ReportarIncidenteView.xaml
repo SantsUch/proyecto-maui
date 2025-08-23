@@ -13,24 +13,25 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="25" Spacing="20">
-            <Frame Padding="15"
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="25" Spacing="20">
+                <Frame Padding="15"
                    BackgroundColor="#E6ECF5"
                    BorderColor="#1649A1"
                    CornerRadius="12"
                    HasShadow="True"
                    Margin="0,0,0,10">
-                <Label Text="Por favor, ingrese los datos referentes al incidente."
+                    <Label Text="Por favor, ingrese los datos referentes al incidente."
                        FontSize="20"
                        TextColor="#1649A1"
                        HorizontalTextAlignment="Center"/>
-            </Frame>
+                </Frame>
 
-            <Label Text="Título"
+                <Label Text="Título"
                    FontSize="16"
                    TextColor="#1649A1"/>
-            <Entry Placeholder="Descripción"
+                <Entry Placeholder="Descripción"
                    TextColor="Black"
                    Text="{Binding IncidenteTO.Titulo}"
                    BackgroundColor="White"
@@ -38,10 +39,10 @@
                    FontSize="14"
                    Margin="0,0,0,10"/>
 
-            <Label Text="Descripción"
+                <Label Text="Descripción"
                    FontSize="16"
                    TextColor="#1649A1"/>
-            <Editor Placeholder="Ingrese los detalles del incidente"
+                <Editor Placeholder="Ingrese los detalles del incidente"
                     AutoSize="TextChanges"
                     HeightRequest="120"
                     FontSize="14"
@@ -50,7 +51,7 @@
                     Margin="0,0,0,10"
                     TextColor="Black"/>
 
-            <Button Text="Obtener ubicación"
+                <Button Text="Obtener ubicación"
                     Command="{Binding ObtenerUbicacionCommand}"
                     BackgroundColor="#FFD700"
                     TextColor="Black"
@@ -60,7 +61,7 @@
                     HeightRequest="45"/>
 
 
-            <Entry 
+                <Entry 
                 Placeholder="Dirección del incidente"
                 Text="{Binding IncidenteTO.Ubicacion}"
                 TextColor="Black"
@@ -70,7 +71,7 @@
                 Margin="0,0,0,10"/>
 
 
-            <Button Text="Adjuntar Imagen"
+                <Button Text="Adjuntar Imagen"
                     Command="{Binding SeleccionarImagenCommand}"
                     BackgroundColor="#FFD700"
                     TextColor="Black"
@@ -79,21 +80,21 @@
                     FontSize="14"
                     HeightRequest="45"/>
 
-            <!-- Imagen previa -->
-            <Frame HasShadow="True"
+                <!-- Imagen previa -->
+                <Frame HasShadow="True"
                    BackgroundColor="White"
                    BorderColor="#CCCCCC"
                    CornerRadius="10"
                    Padding="0"
                    IsVisible="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource StringNotNullOrEmptyConverter}}">
-                <Image Source="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource Base64Converter}}"
+                    <Image Source="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource Base64Converter}}"
                        Aspect="AspectFit"/>
-            </Frame>
+                </Frame>
 
 
-            <BoxView BackgroundColor="Gray" HeightRequest="1"/>
+                <BoxView BackgroundColor="Gray" HeightRequest="1"/>
 
-            <Button Text="Confirmar Datos"
+                <Button Text="Confirmar Datos"
                     Command="{Binding ReportarCommand}"
                     BackgroundColor="#1649A1"
                     TextColor="White"
@@ -102,7 +103,7 @@
                     CornerRadius="12"
                     HeightRequest="50"/>
 
-            <Button Text="Cancelar"
+                <Button Text="Cancelar"
                     Command="{Binding CancelarCommand}"
                     BackgroundColor="#E31E24"
                     TextColor="White"
@@ -110,6 +111,17 @@
                     FontSize="18"
                     CornerRadius="12"
                     HeightRequest="50"/>
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid BackgroundColor="#80000000" IsVisible="{Binding IsReporting}">
+            <ActivityIndicator 
+                IsRunning="{Binding IsReporting}" 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Color="White"
+                WidthRequest="80"
+                HeightRequest="80"/>
+        </Grid>
+    </Grid>
 </ContentPage>

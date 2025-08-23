@@ -1,39 +1,62 @@
 ﻿using BomberosApp.MVVM.Models;
 using BomberosApp.MVVM.Repositories;
 using System.Windows.Input;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace BomberosApp.MVVM.ViewModels
 {
-    public class ReportarIncidenteViewModel
+    public class ReportarIncidenteViewModel : INotifyPropertyChanged
     {
         private readonly IncidentesRepository _repository;
         private UsuarioModel _usuarioActual;
 
-        public IncidenteModel IncidenteTO { get; set; } = new IncidenteModel();
+        private IncidenteModel _incidenteTO = new();
+        public IncidenteModel IncidenteTO
+        {
+            get => _incidenteTO;
+            set { _incidenteTO = value; OnPropertyChanged(); }
+        }
 
-        public ICommand ReportarCommand { get; set; }
-        public ICommand SeleccionarImagenCommand { get; set; }
-        public ICommand CancelarCommand { get; set; }
-        public ICommand ObtenerUbicacionCommand { get; set; }
+        public ICommand ReportarCommand { get; }
+        public ICommand SeleccionarImagenCommand { get; }
+        public ICommand CancelarCommand { get; }
+        public ICommand ObtenerUbicacionCommand { get; }
 
-        public INavigation _navigation { get; set; }
+        public INavigation _navigation { get; }
 
-        private bool _isReporting = false;
+        private bool _isReporting;
+        public bool IsReporting
+        {
+            get => _isReporting;
+            set
+            {
+                if (_isReporting == value) return;
+                _isReporting = value;
+                OnPropertyChanged();
+                // Si usas CanExecute en los botones:
+                (ReportarCommand as Command)?.ChangeCanExecute();
+                (SeleccionarImagenCommand as Command)?.ChangeCanExecute();
+                (ObtenerUbicacionCommand as Command)?.ChangeCanExecute();
+            }
+        }
 
-        // Constructor original
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         public ReportarIncidenteViewModel(INavigation navigation)
         {
             _repository = new IncidentesRepository();
-
-            SeleccionarImagenCommand = new Command(async () => await SeleccionarImagen());
-            ReportarCommand = new Command(async () => await ReportarIncidente());
-            CancelarCommand = new Command(async () => await Cancelar());
-            ObtenerUbicacionCommand = new Command(async () => await ObtenerUbicacion());
-
             _navigation = navigation;
+
+            // Deshabilitamos comandos mientras IsReporting == true
+            ReportarCommand = new Command(async () => await ReportarIncidente(), () => !IsReporting);
+            SeleccionarImagenCommand = new Command(async () => await SeleccionarImagen(), () => !IsReporting);
+            CancelarCommand = new Command(async () => await Cancelar());
+            ObtenerUbicacionCommand = new Command(async () => await ObtenerUbicacion(), () => !IsReporting);
         }
 
-        // Nuevo constructor que recibe el usuario
         public ReportarIncidenteViewModel(INavigation navigation, UsuarioModel usuario) : this(navigation)
         {
             _usuarioActual = usuario;
@@ -41,21 +64,13 @@ namespace BomberosApp.MVVM.ViewModels
 
         private async Task ReportarIncidente()
         {
-            // Evita dobles envíos por taps rápidos
-            if (_isReporting) return;
+            // Evita dobles taps
+            if (IsReporting) return;
 
-            
-            if (!Validar())
-                return;
+            // Validar antes de continuar
+            if (!Validar()) return;
 
-            if (_usuarioActual != null)
-            {
-                IncidenteTO.UsuarioId = _usuarioActual.Id;
-                IncidenteTO.UsuarioNombre = _usuarioActual.Nombre;
-            }
-
-
-            // Mostrar confirmación con ubicación visible (si no hay, avisa)
+            // (UX) Pedimos confirmación ANTES de activar el spinner
             var ubicacion = string.IsNullOrWhiteSpace(IncidenteTO.Ubicacion)
                 ? "(sin ubicación especificada)"
                 : IncidenteTO.Ubicacion.Trim();
@@ -66,26 +81,30 @@ namespace BomberosApp.MVVM.ViewModels
                 "Sí, enviar",
                 "Cancelar"
             );
-
-            if (!confirmar)
-                return;
-
-            // Estado inicial + marca de tiempo si tu modelo la soporta
-            IncidenteTO.Estado = "Reportado";
-            IncidenteTO.FechaReportado = DateTime.UtcNow;
+            if (!confirmar) return;
 
             try
             {
-                _isReporting = true;
+                IsReporting = true; // 🔹 Activa overlay
 
+                // Asignar usuario si existe (opcional para reportes anónimos)
+                if (_usuarioActual != null)
+                {
+                    IncidenteTO.UsuarioId = _usuarioActual.Id;
+                    IncidenteTO.UsuarioNombre = _usuarioActual.Nombre;
+                }
+
+                // Estado + fecha
+                IncidenteTO.Estado = "Reportado";
+                IncidenteTO.FechaReportado = DateTime.UtcNow;
+
+                // Guardar
                 await _repository.CrearIncidenteAsync(IncidenteTO);
 
                 await ShowMessage("¡Incidente reportado exitosamente!", true);
 
-                // Si esta página se cierra tras reportar, limpiar es opcional; mantenlo si reutilizas la vista
                 LimpiarFormulario();
 
-                // Asegura el await (tu v1 lo tenía bien, la v2 lo omitió)
                 await _navigation.PopAsync();
             }
             catch (Exception ex)
@@ -95,9 +114,10 @@ namespace BomberosApp.MVVM.ViewModels
             }
             finally
             {
-                _isReporting = false;
+                IsReporting = false; // 🔹 Apaga overlay SIEMPRE
             }
         }
+
 
         private async Task SeleccionarImagen()
         {

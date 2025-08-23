@@ -37,6 +37,8 @@ namespace BomberosApp.MVVM.ViewModels
             _funcionario = funcionario;
             _incidentesRepository = new IncidentesRepository();
 
+            Funcionario = funcionario;
+
             ActualizarListaCommand = new Command(async () => await CargarIncidentesAsignados());
             SeleccionarIncidenteCommand = new Command<IncidenteModel>(async (incidente) => await SeleccionarIncidente(incidente));
 
@@ -81,8 +83,6 @@ namespace BomberosApp.MVVM.ViewModels
             await _navigation.PushAsync(new DetalleIncidenteView(incidente, _funcionario));
         }
 
-
-        // Hook de Fody: se dispara cuando cambia PrioridadSeleccionada
         private void OnPrioridadSeleccionadaChanged() => _ = CargarIncidentesAsignados();
     }
 }
