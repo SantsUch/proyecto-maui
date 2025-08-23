@@ -5,9 +5,9 @@ namespace BomberosApp.MVVM.Views;
 
 public partial class DashboardFuncionarioView : ContentPage
 {
-    public DashboardFuncionarioView(UsuarioModel usuario)
+    public DashboardFuncionarioView(UsuarioModel funcionario)
     {
         InitializeComponent();
-        BindingContext = new DashboardFuncionarioViewModel(Navigation, usuario);
+        BindingContext = new DashBoardFuncionarioViewModel(Navigation, funcionario);
     }
 }

@@ -51,14 +51,7 @@
                             FontSize="14"
                             Padding="0"/>
 
-                    <!-- Opción: ¿Olvidó su contraseña? -->
-                    <Button Text="¿Ha olvidado su contraseña?"
-                            Command="{Binding ForgotPasswordCommand}"
-                            BackgroundColor="Transparent"
-                            TextColor="#E31E24"
-                            FontAttributes="Italic"
-                            FontSize="14"
-                            Padding="0"/>
+                    
                 </VerticalStackLayout>
             </Frame>
 

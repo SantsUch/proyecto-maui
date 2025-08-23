@@ -225,7 +225,7 @@
                                    HasShadow="True"
                                    HeightRequest="150">
                                 <Image Source="{Binding ImagenIncidenteBase64, Converter={StaticResource Base64Converter}}"
-                                       Aspect="AspectFill"
+                                       Aspect="AspectFit"
                                        HeightRequest="140"/>
                             </Frame>
                         </VerticalStackLayout>

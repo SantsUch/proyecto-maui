@@ -1,67 +1,88 @@
-﻿using BomberosApp.MVVM.Models;
-using BomberosApp.MVVM.Views;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
+using PropertyChanged;
+using BomberosApp.MVVM.Models;
+using BomberosApp.MVVM.Repositories;
+using BomberosApp.MVVM.Views;
 
 namespace BomberosApp.MVVM.ViewModels
 {
-    public class DashboardFuncionarioViewModel
+    [AddINotifyPropertyChangedInterface]
+    public class DashBoardFuncionarioViewModel
     {
         private readonly INavigation _navigation;
+        private readonly IncidentesRepository _incidentesRepository;
+        private readonly UsuarioModel _funcionario;
 
-        public UsuarioModel Usuario { get; set; }
+        public ObservableCollection<IncidenteModel> IncidentesAsignados { get; set; } = new();
+        public IncidenteModel IncidenteSeleccionado { get; set; }
+        public UsuarioModel Funcionario { get; set; } 
 
-        public ICommand AsignarIncidentesCommand { get; set; }
-        public ICommand VerIncidentesAsignadosCommand { get; set; }
-        public ICommand ReportarIncidenteCommand { get; set; }
-        public ICommand VerPerfilCommand { get; set; }
-        public ICommand CerrarSesionCommand { get; set; }
+        public ObservableCollection<string> PrioridadesFiltro { get; set; } = new()
+        {
+            "Todos", "Crítica", "Alta", "Media", "Baja"
+        };
 
-        public DashboardFuncionarioViewModel(INavigation navigation, UsuarioModel usuario)
+        public string PrioridadSeleccionada { get; set; } = "Todos";
+
+        public ICommand ActualizarListaCommand { get; }
+        public ICommand SeleccionarIncidenteCommand { get; }
+
+        public DashBoardFuncionarioViewModel(INavigation navigation, UsuarioModel funcionario)
         {
             _navigation = navigation;
-            Usuario = usuario ?? new UsuarioModel { Nombre = "Funcionario" };
+            _funcionario = funcionario;
+            _incidentesRepository = new IncidentesRepository();
 
-            AsignarIncidentesCommand = new Command(async () => await AsignarIncidentes());
-            VerIncidentesAsignadosCommand = new Command(async () => await VerIncidentesAsignados());
-            ReportarIncidenteCommand = new Command(async () => await ReportarIncidente());
-            VerPerfilCommand = new Command(async () => await VerPerfil());
-            CerrarSesionCommand = new Command(async () => await CerrarSesion());
+            ActualizarListaCommand = new Command(async () => await CargarIncidentesAsignados());
+            SeleccionarIncidenteCommand = new Command<IncidenteModel>(async (incidente) => await SeleccionarIncidente(incidente));
+
+            _ = CargarIncidentesAsignados();
         }
 
-        private async Task AsignarIncidentes()
+        private async Task CargarIncidentesAsignados()
         {
-            // Los funcionarios SÍ pueden asignar incidentes
-            await _navigation.PushAsync(new AsignarIncidentesView(Usuario));
-        }
-
-        private async Task VerIncidentesAsignados()
-        {
-            // Navegar a la vista de incidentes asignados al funcionario
-            await _navigation.PushAsync(new MisIncidentesAsignadosView(Usuario));
-        }
-
-        private async Task ReportarIncidente()
-        {
-            await _navigation.PushAsync(new ReportarIncidenteView(Usuario));
-        }
-
-        private async Task VerPerfil()
-        {
-            await _navigation.PushAsync(new PerfilUsuarioView(Usuario));
-        }
-
-        private async Task CerrarSesion()
-        {
-            bool confirmar = await Application.Current.MainPage.DisplayAlert(
-                "Cerrar Sesión",
-                "¿Está seguro que desea cerrar sesión?",
-                "Sí",
-                "No");
-
-            if (confirmar)
+            try
             {
-                await _navigation.PopToRootAsync();
+                var snapshot = await _incidentesRepository.ObtenerTodosAsync();
+
+                var lista = snapshot
+                    .Select(s =>
+                    {
+                        var o = s.Object;
+                        o.Key = s.Key; // guarda la key de Firebase
+                        return o;
+                    })
+                    .Where(o => o.FuncionarioAsignadoId == _funcionario?.Id)
+                    .OrderByDescending(o => o.FechaReportado)
+                    .ToList();
+
+                if (PrioridadSeleccionada != "Todos")
+                    lista = lista.Where(o => o.Prioridad == PrioridadSeleccionada).ToList();
+
+                IncidentesAsignados.Clear();
+                foreach (var inc in lista)
+                    IncidentesAsignados.Add(inc);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar incidentes asignados: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Error", "No se pudieron cargar los incidentes asignados.", "OK");
             }
         }
+
+        private async Task SeleccionarIncidente(IncidenteModel incidente)
+        {
+            if (incidente == null) return;
+
+            await _navigation.PushAsync(new DetalleIncidenteView(incidente, _funcionario));
+        }
+
+
+        // Hook de Fody: se dispara cuando cambia PrioridadSeleccionada
+        private void OnPrioridadSeleccionadaChanged() => _ = CargarIncidentesAsignados();
     }
 }

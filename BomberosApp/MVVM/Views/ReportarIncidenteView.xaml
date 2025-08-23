@@ -82,16 +82,14 @@
             <!-- Imagen previa -->
             <Frame HasShadow="True"
                    BackgroundColor="White"
-                   HeightRequest="500"
                    BorderColor="#CCCCCC"
                    CornerRadius="10"
                    Padding="0"
-                   Margin="0,10"
                    IsVisible="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource StringNotNullOrEmptyConverter}}">
                 <Image Source="{Binding IncidenteTO.ImagenBase64, Converter={StaticResource Base64Converter}}"
-                       HeightRequest="500"
-                       Aspect="AspectFill"/>
+                       Aspect="AspectFit"/>
             </Frame>
+
 
             <BoxView BackgroundColor="Gray" HeightRequest="1"/>
 

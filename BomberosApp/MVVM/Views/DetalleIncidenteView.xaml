@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:BomberosApp.Converters"
+             x:Class="BomberosApp.MVVM.Views.DetalleIncidenteView"
+             Title="Funcionario"
+             BackgroundColor="#F5F5F5">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter" />
+            <converters:Base64ToImageSourceConverter x:Key="Base64Converter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Frame BackgroundColor="#1649A1"
+               CornerRadius="15"
+               Padding="20"
+               HasShadow="True"
+               HeightRequest="70"
+               WidthRequest="320"
+               Margin="0,20,0,0"
+               Grid.Row="0">
+            
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Detalles del Incidente"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="15"
+                   HasShadow="True">
+                    <VerticalStackLayout Spacing="15">
+
+                        <Label Text="Titulo" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.Titulo}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+
+                        <Label Text="Prioridad" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.Prioridad}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+
+                        <Label Text="Ubicación" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.Ubicacion}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+
+                        <Label Text="Descripción" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.Descripcion}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+
+                        <Label Text="Observaciones" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.ObservacionesAsignacion}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+
+                        <Label Text="Fecha y Hora" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.FechaReportado, StringFormat='{0:dd/MM/yyyy HH:mm}'}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+
+                        <Label Text="Imagen" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Frame HasShadow="True"
+                               BackgroundColor="White"
+                               BorderColor="#CCCCCC"
+                               CornerRadius="10"
+                               Padding="0"
+                               IsVisible="{Binding Incidente.ImagenBase64, Converter={StaticResource StringNotNullOrEmptyConverter}}">
+                            <Image Source="{Binding Incidente.ImagenBase64, Converter={StaticResource Base64Converter}}"
+                                   Aspect="AspectFit"/>
+                        </Frame>
+
+                        <BoxView BackgroundColor="Gray" HeightRequest="1"/>
+
+                        <Label Text="Estado Actual" FontAttributes="Bold" TextColor="#1649A1"/>
+                        <Label Text="{Binding Incidente.Estado}" TextColor="#333" BackgroundColor="#F5F5F5"/>
+                        
+                        <!-- Cambio de estado -->
+                        <Label Text="Cambiar Estado:" FontAttributes="Bold" TextColor="#1649A1"/>
+
+                        <Frame BorderColor="#ccc" CornerRadius="5" Padding="0" HasShadow="False">
+                            <Picker ItemsSource="{Binding EstadosDisponibles}"
+                                    SelectedItem="{Binding NuevoEstado}"
+                                    BackgroundColor="White"
+                                    TextColor="Black"/>
+                        </Frame>
+
+                        <!-- Botón Actualizar Estado -->
+                        <Grid>
+                            <Button Text="Actualizar Estado"
+                                    Command="{Binding CambiarEstadoCommand}"
+                                    BackgroundColor="#1649A1"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    HeightRequest="45"
+                                    CornerRadius="12">
+                                <Button.Triggers>
+                                    <!-- Visualmente deshabilitado mientras actualiza -->
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsActualizando}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Opacity" Value="0.7"/>
+                                        <Setter Property="Text" Value="Actualizando..."/>
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <!-- Capa que bloquea taps -->
+                            <Grid IsVisible="{Binding IsActualizando}" BackgroundColor="#00000000" InputTransparent="False"/>
+
+                            <ActivityIndicator IsRunning="{Binding IsActualizando}"
+                                               IsVisible="{Binding IsActualizando}"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"/>
+                        </Grid>
+
+                        <!-- Botón Finalizar -->
+                        <Button Text="Finalizar Incidente"
+                                Command="{Binding FinalizarCommand}"
+                                BackgroundColor="#E31E24"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                HeightRequest="45"
+                                CornerRadius="12"
+                                IsVisible="{Binding EsFinalizable}">
+                            <Button.Triggers>
+                                <!-- También se deshabilita visualmente durante la actividad -->
+                                <DataTrigger TargetType="Button" Binding="{Binding IsActualizando}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Opacity" Value="0.7"/>
+                                </DataTrigger>
+                                <!-- Protección extra: si por UI aún se ve visible, pero no es finalizable -->
+                                <DataTrigger TargetType="Button" Binding="{Binding EsFinalizable}" Value="False">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Opacity" Value="0.7"/>
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
